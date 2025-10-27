@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>单词背诵与学习时间追踪（含登录）</title>
+  <style>
+    body{font-family:system-ui,Segoe UI,Roboto,Arial,Microsoft YaHei,sans-serif;margin:0;padding:20px;background:#0f1220;color:#e6e8ee}
+    .wrap{max-width:980px;margin:0 auto}
+    .card{background:#111827;border:1px solid #1f2937;border-radius:14px;padding:16px;margin:10px 0}
+    input,textarea,button{font:inherit}
+    input,textarea{width:100%;padding:8px 10px;border-radius:10px;border:1px solid #1f2937;background:#0b1220;color:#e6e8ee}
+    button{padding:10px 14px;border-radius:10px;border:0;background:#5b9cff;color:#08111f;font-weight:700;cursor:pointer}
+    table{width:100%;border-collapse:collapse}
+    th,td{padding:8px;border-bottom:1px solid #1f2937}
+    .row{display:flex;gap:8px;flex-wrap:wrap}
+    .right{text-align:right}
+    .muted{color:#94a3b8}
+    .danger{background:#ef4444;color:#fff}
+    .secondary{background:#1f2937;color:#e6e8ee}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <h2>单词背诵与学习时间追踪（含登录）</h2>
+
+  <div id="auth" class="card">
+    <div class="row">
+      <input id="email" type="email" placeholder="邮箱" style="min-width:220px" />
+      <input id="password" type="password" placeholder="密码 (≥6)" style="min-width:180px" />
+      <button id="btnLogin">登录</button>
+      <button id="btnRegister" class="secondary">注册</button>
+      <button id="btnLogout" class="danger" style="margin-left:auto;display:none">退出</button>
+    </div>
+    <div class="muted" id="userTip" style="margin-top:6px"></div>
+  </div>
+
+  <div class="card">
+    <h3>新增记录</h3>
+    <div class="row">
+      <input id="date" type="date" />
+      <input id="words" type="number" min="0" placeholder="今日单词数" />
+      <input id="minutes" type="number" min="0" placeholder="今日分钟数" />
+    </div>
+    <div style="margin-top:6px"><textarea id="note" placeholder="备注（可选）"></textarea></div>
+    <div style="margin-top:8px" class="row">
+      <button id="btnSave">保存</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>记录列表</h3>
+    <table>
+      <thead><tr><th>日期</th><th class="right">单词</th><th class="right">分钟</th><th>备注</th><th class="right">操作</th></tr></thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+</div>
+<script src="./app.js"></script>
+</body>
+</html>

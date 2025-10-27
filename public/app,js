@@ -1,0 +1,55 @@
+const $ = s => document.querySelector(s);
+const API_BASE = "https://vocab-api.onrender.com"; // ← 改这里
+const api = (path, opts={}) =>
+  fetch(path, { credentials:'include', headers:{'Content-Type':'application/json'}, ...opts })
+    .then(r => r.json());
+
+function today(){ return new Date().toISOString().slice(0,10); }
+
+async function me(){
+  const u = await api('/api/auth/me');
+  if(u && u.email){ $('#userTip').textContent = `已登录：${u.email}`; $('#btnLogout').style.display='inline-block'; }
+  else { $('#userTip').textContent = '未登录'; $('#btnLogout').style.display='none'; }
+}
+
+async function load(){
+  const list = await api('/api/entries');
+  const tb = $('#tbody'); tb.innerHTML='';
+  list.forEach(e=>{
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${e.date}</td><td class="right">${e.words}</td><td class="right">${e.minutes}</td><td>${e.note??''}</td>`;
+    const tdOps = document.createElement('td'); tdOps.className='right';
+    const del = document.createElement('button'); del.textContent='删除'; del.className='danger';
+    del.onclick= async()=>{ await api(`/api/entries/${e.id}`, { method:'DELETE' }); load(); };
+    tdOps.appendChild(del); tr.appendChild(tdOps); tb.appendChild(tr);
+  });
+}
+
+// 事件
+$('#btnRegister').onclick = async()=>{
+  const email=$('#email').value.trim(); const password=$('#password').value;
+  const res = await api('/api/auth/register',{ method:'POST', body: JSON.stringify({ email, password })});
+  if(res.error){ alert('注册失败: '+res.error); } else { await me(); await load(); }
+};
+
+$('#btnLogin').onclick = async()=>{
+  const email=$('#email').value.trim(); const password=$('#password').value;
+  const res = await api('/api/auth/login',{ method:'POST', body: JSON.stringify({ email, password })});
+  if(res.error){ alert('登录失败'); } else { await me(); await load(); }
+};
+
+$('#btnLogout').onclick = async()=>{ await api('/api/auth/logout',{ method:'POST' }); await me(); $('#tbody').innerHTML=''; };
+
+$('#btnSave').onclick = async()=>{
+  const date=$('#date').value||today();
+  const words=Number($('#words').value||0);
+  const minutes=Number($('#minutes').value||0);
+  const note=$('#note').value.trim();
+  const res = await api('/api/entries',{ method:'POST', body: JSON.stringify({ date, words, minutes, note })});
+  if(res.error){ alert('保存失败'); } else { $('#words').value=''; $('#minutes').value=''; $('#note').value=''; await load(); }
+};
+
+// 初始化
+$('#date').value = today();
+me();
+load();
